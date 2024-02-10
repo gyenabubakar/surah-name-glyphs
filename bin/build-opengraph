@@ -1,0 +1,53 @@
+#!/bin/sh
+
+##
+# == About
+# The following shell script creates '.png' images
+# from the '.svg' images found in the root of the
+# repository. The '.png' images are optimized for
+# the opengraph protocol (see https://ogp.me/).
+#
+# == CSS
+# By default opengraph/default.css is applied to
+# an svg before being converted to a png. When
+# /opengraph/<surahid>.css exists, it takes precedence
+# over opengraph/default.css.
+
+require() {
+    for i in $(seq 1 $#); do
+        eval "cmd=\$${i}"
+        if ! which "${cmd}" > /dev/null 2>&1; then
+            echo "error: ${cmd} was not found"
+            exit 1
+        fi
+    done
+}
+require rsvg-convert
+
+css_path() {
+    path="opengraph/${1}.css"
+    if [ -e "${path}" ]; then
+        echo "${path}"
+    else
+        echo opengraph/default.css
+    fi
+}
+
+for svg in [!0]*.svg; do
+    id=$(basename ${svg} .svg)
+    png="opengraph/${id}.png"
+    css=$(css_path ${id})
+    rsvg-convert "${svg}" \
+        --stylesheet "${css}" \
+        --page-height=1200 \
+        --page-width=1600 \
+        --width=1200 \
+        --height=630 \
+        --background-color=white \
+        -o "${png}"
+    if [ "$?" = "0" ]; then
+        echo "${png}"
+    else
+        exit $?
+    fi
+done
