@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+      div {
+        margin: 0 auto;
+        width: 1200px;
+        height: 630px;
+        border: 1px solid #000;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- HTML -->
+    <div>
+      <img/>
+      <br>
+      <span></span>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+      const img  = document.querySelector("img");
+      const span = document.querySelector("span");
+      let i = (function() {
+        const regexp = /\d{1,3}/;
+        if (regexp.test(location.hash))
+          return Number(location.hash.substr(1, location.hash.length))
+        else
+          return 1
+      })();
+      function set(j) {
+        if (j > 114)
+          i = j = 114
+        else if(j < 1)
+          i = j = 1
+        img.setAttribute("src", `${j}.png`);
+        span.innerText = `${j}.png`;
+        location.hash = `${j}`;
+      }
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "ArrowLeft")
+          set(--i);
+        else if (e.key === "ArrowRight")
+          set(++i);
+      });
+      set(i);
+    </script>
+  </body>
+</html>
